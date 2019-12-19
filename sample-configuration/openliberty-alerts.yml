@@ -1,0 +1,59 @@
+groups:
+- name: libertyexample
+  rules:
+  ### Sends an alert for having CPU usage above 99%
+  #   Available starting in Open Liberty 20.0.0.1
+  ###
+  - alert: cpuUsageAbove99%
+    expr: rate(base_cpu_processCpuTime_seconds[2m]) / base_cpu_availableProcessors > 0.99
+    for: 1m
+    labels:
+      threshold: 99%
+      severity: critical
+    annotations:
+      description: "{{ $labels.instance }} CPU usage is above 99%"
+
+  ### Sends an alert for having too many threadpools
+  #   Requires monitor-1.0 to be enabled
+  ## 
+  - alert: threadpoolsOver16
+    expr: max_over_time(vendor_threadpool_size[5m]) > 16
+    for: 5m
+    labels:
+      severity: info
+      category: monitor_metric
+    annotations:
+      description: "{{ $labels.instance }} has over 16 threadpools in use"
+
+  ### Sends an alert if there is a connection queueing
+  #   Requires monitor-1.0 to be enabled
+  ###
+  - alert: connectionsExistInQueue
+    expr: increase(vendor_connectionpool_queuedRequests_total[1m]) > 0
+    labels:
+      severity: low
+      category: monitor_metric
+    annotations:
+      description: "The connectionpool is full - connections are queueing at {{ $labels.instance }}"
+
+  ### Sends an alert when response time per request is greater than 10 seconds
+  #   Requires monitor-1.0 to be enabled
+  ###
+  - alert: responseTimePerRequestAbove10Sec
+    expr: rate(vendor_servlet_responseTime_total_seconds[1m])/rate(vendor_servlet_request_total[1m]) > 10
+    for: 10s
+    labels:
+      severity: high
+    annotations:
+      description: "{{ $labels.instance }} response time is over 10 seconds"
+
+  ### Sends an alert when heap usage is above 80% for one minute 
+  #   
+  ###
+  - alert: heapUsageAbove50%
+    expr: base_memory_usedHeap_bytes / base_memory_maxHeap_bytes > 0.8
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: "{{ $labels.instance }} heap size is over 80%"

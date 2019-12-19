@@ -1,0 +1,22 @@
+groups:
+- name: libertyexample
+  rules:
+  - alert: heapUsageAbove90%
+    expr: base_memory_usedHeap_bytes / base_memory_maxHeap_bytes > 0.02
+    for: 30s
+    labels:
+      alerttype: heap
+      severity: critical
+    annotations:
+      summary: "Heap usage is above 90%"
+      description: "{{ $labels.instance }} heap usage above 90%"
+  - alert: heapUsageAbove50%
+    expr: base_memory_usedHeap_bytes / base_memory_maxHeap_bytes > 0.01
+    for: 30s
+    labels:
+      alerttype: heap
+      severity: warning
+    annotations:
+      summary: "Heap usage is above 50%"
+      description: "{{ $labels.instance }} heap usage is above 50%"
+      
