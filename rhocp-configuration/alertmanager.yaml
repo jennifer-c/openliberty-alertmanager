@@ -1,0 +1,17 @@
+global:
+  resolve_timeout: 5m
+  slack_api_url: <your api url>
+# The root route. This route is used as the default
+# if there are no matches in the child routes.
+route:
+  group_by: [ alertname ]
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 5m
+  receiver: 'default_receiver'
+receivers:
+- name: 'default_receiver'
+  slack_configs:
+  - channel: 'prometheus-alertmanager-test'
+    title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
+    text: "*Description*: {{ .CommonAnnotations.description }}\n*Severity*: {{ .CommonLabels.severity }}"
