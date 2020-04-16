@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: null
+  labels:
+    prometheus: k8s
+    role: prometheus-rulefiles
+  name: prometheus-example-rules
+  namespace: prometheus-operator-alertmanager
+spec:
+  groups:
+    - name: ./example.rules
+      rules:
+        - alert: ExampleAlert
+          expr: vector(1)
+    - name: libertyexample
+      rules:
+      - alert: heapUsageTooHigh
+        expr: base_memory_usedHeap_bytes / base_memory_maxHeap_bytes > 0.9
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Heap usage is too high"
+          description: "{{ $labels.instance }} heap usage is too high"
